@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema>
+  <relations>
+    <relation name="Customers">
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="c_name" type="java.lang.Integer"/>
+      <attribute name="c_address" type="java.lang.Integer"/>
+      <access-method name="m1"/>
+    </relation>
+    <relation name="Orders">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="o_date" type="java.lang.Integer"/>
+      <access-method name="m2"/>
+    </relation>
+    <relation name="LineItem">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="linenum" type="java.lang.Integer"/>
+      <attribute name="qty" type="java.lang.Integer"/>
+      <access-method name="m3"/>
+    </relation>
+    <relation name="Q18_tmp">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="sumqty" type="java.lang.Integer"/>
+      <access-method name="m4"/>
+    </relation>
+    <view name="R">
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="sumqty" type="java.lang.Integer"/>
+    </view>
+    <relation name="RPrime">
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="sumqty" type="java.lang.Integer"/>
+      <access-method name="m5"/>
+    </relation>
+    <view name="vCustomers">
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="c_name" type="java.lang.Integer"/>
+      <attribute name="c_address" type="java.lang.Integer"/>
+    </view>
+    <view name="vOrders">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="o_date" type="java.lang.Integer"/>
+    </view>
+    <view name="vLineItem">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="linenum" type="java.lang.Integer"/>
+      <attribute name="qty" type="java.lang.Integer"/>
+    </view>
+    <view name="vQ18_tmp">
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="sumqty" type="java.lang.Integer"/>
+    </view>
+    <view name="vRPrime">
+      <attribute name="c_key" type="java.lang.Integer"/>
+      <attribute name="o_key" type="java.lang.Integer"/>
+      <attribute name="sumqty" type="java.lang.Integer"/>
+    </view>
+  </relations>
+  <dependencies>
+    <dependency type="TGD">
+      <body>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="Customers">
+          <variable name="a"  />
+          <variable  />
+          <variable  />
+        </atom>
+    <atom name="Orders">
+          <variable name="b"  />
+          <variable name="a" />
+          <variable  />
+    </atom>
+    <atom name="LineItem">
+          <variable name="b"  />
+          <variable  />
+          <variable  />
+    </atom>
+    <atom name="Q18_tmp">
+          <variable name="b"  />
+          <variable name="c"  />
+    </atom>
+
+		</head>
+    </dependency>
+
+  <dependency type="TGD">
+      <body>
+        <atom name="Customers">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vCustomers">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vCustomers">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="Customers">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="Orders">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vOrders">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vOrders">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="Orders">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="LineItem">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vLineItem">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vLineItem">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="LineItem">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="Q18_tmp">
+          <variable name="a"  />
+          <variable name="b"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vQ18_tmp">
+          <variable name="a"  />
+          <variable name="b"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vQ18_tmp">
+          <variable name="a"  />
+          <variable name="b"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="Q18_tmp">
+          <variable name="a"  />
+          <variable name="b"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="RPrime">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vRPrime">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vRPrime">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="RPrime">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="RPrime">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="Customers">
+		  <variable name="x" />
+		  <variable name="y" />
+		  <variable  />
+	    </atom>
+	    <atom name="Customers">
+		  <variable name="x" />
+		  <variable name="z" />
+		  <variable  />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="Customers">
+		  <variable name="x" />
+		  <variable  />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="Customers">
+		  <variable name="x" />
+		  <variable  />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="Orders">
+		  <variable name="x" />
+		  <variable name="y" />
+		  <variable  />
+	    </atom>
+	    <atom name="Orders">
+		  <variable name="x" />
+		  <variable name="z" />
+		  <variable  />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="Orders">
+		  <variable name="x" />
+		  <variable  />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="Orders">
+		  <variable name="x" />
+		  <variable  />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="LineItem">
+		  <variable name="x" />
+		  <variable name="y" />
+		  <variable name="a" />
+	    </atom>
+	    <atom name="LineItem">
+		  <variable name="x" />
+		  <variable name="y" />
+		  <variable name="b" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="a" />
+		  <variable name="b" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="Q18_tmp">
+		  <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="Q18_tmp">
+		  <variable name="x" />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+  </dependencies>
+</schema>

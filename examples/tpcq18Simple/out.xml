@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RelationalTermWithCost type="ProjectionTerm">
+    <projections name="fv_x1618984457" type="java.lang.Integer"/>
+    <projections name="fv_z1618984457" type="java.lang.Integer"/>
+    <projections name="fv_a1618984457" type="java.lang.Integer"/>
+    <RelationalTerm type="JoinTerm">
+        <RelationalTerm type="RenameTerm">
+            <renamings name="fv_x1618984457" type="java.lang.Integer"/>
+            <renamings name="fv_z1618984457" type="java.lang.Integer"/>
+            <renamings name="fv_a1618984457" type="java.lang.Integer"/>
+            <RelationalTerm type="AccessTerm">
+                <accessMethod name="m1"/>
+                <inputConstants/>
+                <relation name="Customers">
+                    <attribute name="c_key" type="java.lang.Integer"/>
+                    <attribute name="c_name" type="java.lang.Integer"/>
+                    <attribute name="c_address" type="java.lang.Integer"/>
+                    <access-method name="m1"/>
+                </relation>
+            </RelationalTerm>
+        </RelationalTerm>
+        <RelationalTerm type="RenameTerm">
+            <renamings name="fv_x1618984457" type="java.lang.Integer"/>
+            <renamings name="v_y1618984457" type="java.lang.Integer"/>
+            <renamings name="v_b1618984457" type="java.lang.Integer"/>
+            <RelationalTerm type="AccessTerm">
+                <accessMethod name="m5"/>
+                <inputConstants/>
+                <relation name="RPrime">
+                    <attribute name="c_key" type="java.lang.Integer"/>
+                    <attribute name="o_key" type="java.lang.Integer"/>
+                    <attribute name="sumqty" type="java.lang.Integer"/>
+                    <access-method name="m5"/>
+                </relation>
+            </RelationalTerm>
+        </RelationalTerm>
+    </RelationalTerm>
+    <cost value="2.0" type="DoubleCost"/>
+</RelationalTermWithCost>
