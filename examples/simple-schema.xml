@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema>
+  <relations>
+    <view name="vr">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+    </view>
+    <relation name="r">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+      <access-method name="m1"/>
+    </relation>
+  </relations>
+  <dependencies>
+    <dependency type="TGD">
+      <body>
+        <atom name="r">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vr">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vr">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="r">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+  </dependencies>
+</schema>

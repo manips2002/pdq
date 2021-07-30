@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<query>
+  <body>
+	<atom name="r">
+	  <variable name="x" />
+	  <variable name="y" />
+	  <variable name="z" />
+	</atom>
+  </body>
+  <head name="Q">
+	<variable name="x" />
+  </head>
+</query>

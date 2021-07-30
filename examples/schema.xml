@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema>
+  <relations>
+    <relation name="R">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+      <access-method name="m1"/>
+    </relation>
+    <relation name="S">
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+      <access-method name="m2"/>
+    </relation>
+    <relation name="T">
+      <attribute name="d" type="java.lang.Integer"/>
+      <attribute name="e" type="java.lang.Integer"/>
+      <attribute name="f" type="java.lang.Integer"/>
+      <access-method name="m3"/>
+    </relation>
+    <view name="vR">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+    </view>
+    <view name="vS">
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+    </view>
+    <view name="vT">
+      <attribute name="d" type="java.lang.Integer"/>
+      <attribute name="e" type="java.lang.Integer"/>
+      <attribute name="f" type="java.lang.Integer"/>
+    </view>
+  </relations>
+  <dependencies>
+    <dependency type="TGD">
+      <body>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vR">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vR">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="S">
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vS">
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="T">
+          <variable name="d"  />
+          <variable name="e"  />
+          <variable name="f"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vT">
+          <variable name="d"  />
+          <variable name="e"  />
+          <variable name="f"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vS">
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="S">
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vT">
+          <variable name="d"  />
+          <variable name="e"  />
+          <variable name="f"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="T">
+          <variable name="d"  />
+          <variable name="e"  />
+          <variable name="f"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+	  <body>
+	    <atom name="R">
+		  <variable />
+		  <variable />
+		  <variable name="x" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="S">
+          <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="R">
+		  <variable name="x" />
+		  <variable name="y" />
+		  <variable  />
+	    </atom>
+	    <atom name="R">
+		  <variable name="x" />
+		  <variable name="z" />
+		  <variable  />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="S">
+		  <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="S">
+		  <variable name="x" />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+  </dependencies>
+</schema>

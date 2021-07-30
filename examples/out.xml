@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<RelationalTermWithCost type="ProjectionTerm">
+    <projections name="fv_x1397333381" type="java.lang.Integer"/>
+    <projections name="fv_a1397333381" type="java.lang.Integer"/>
+    <RelationalTerm type="JoinTerm">
+        <RelationalTerm type="JoinTerm">
+            <RelationalTerm type="RenameTerm">
+                <renamings name="fv_x1397333381" type="java.lang.Integer"/>
+                <renamings name="v_y1397333381" type="java.lang.Integer"/>
+                <renamings name="v__41397333381" type="java.lang.Integer"/>
+                <RelationalTerm type="AccessTerm">
+                    <accessMethod name="m1"/>
+                    <inputConstants/>
+                    <relation name="R">
+                        <attribute name="a" type="java.lang.Integer"/>
+                        <attribute name="b" type="java.lang.Integer"/>
+                        <attribute name="c" type="java.lang.Integer"/>
+                        <access-method name="m1"/>
+                    </relation>
+                </RelationalTerm>
+            </RelationalTerm>
+            <RelationalTerm type="RenameTerm">
+                <renamings name="v_z1397333381" type="java.lang.Integer"/>
+                <renamings name="fv_a1397333381" type="java.lang.Integer"/>
+                <RelationalTerm type="AccessTerm">
+                    <accessMethod name="m2"/>
+                    <inputConstants/>
+                    <relation name="S">
+                        <attribute name="b" type="java.lang.Integer"/>
+                        <attribute name="c" type="java.lang.Integer"/>
+                        <access-method name="m2"/>
+                    </relation>
+                </RelationalTerm>
+            </RelationalTerm>
+        </RelationalTerm>
+        <RelationalTerm type="JoinTerm">
+            <RelationalTerm type="RenameTerm">
+                <renamings name="v_y1397333381" type="java.lang.Integer"/>
+                <renamings name="v_z1397333381" type="java.lang.Integer"/>
+                <renamings name="v__51397333381" type="java.lang.Integer"/>
+                <RelationalTerm type="AccessTerm">
+                    <accessMethod name="m1"/>
+                    <inputConstants/>
+                    <relation name="R">
+                        <attribute name="a" type="java.lang.Integer"/>
+                        <attribute name="b" type="java.lang.Integer"/>
+                        <attribute name="c" type="java.lang.Integer"/>
+                        <access-method name="m1"/>
+                    </relation>
+                </RelationalTerm>
+            </RelationalTerm>
+            <RelationalTerm type="RenameTerm">
+                <renamings name="fv_a1397333381" type="java.lang.Integer"/>
+                <renamings name="v_b1397333381" type="java.lang.Integer"/>
+                <renamings name="v__61397333381" type="java.lang.Integer"/>
+                <RelationalTerm type="AccessTerm">
+                    <accessMethod name="m3"/>
+                    <inputConstants/>
+                    <relation name="T">
+                        <attribute name="d" type="java.lang.Integer"/>
+                        <attribute name="e" type="java.lang.Integer"/>
+                        <attribute name="f" type="java.lang.Integer"/>
+                        <access-method name="m3"/>
+                    </relation>
+                </RelationalTerm>
+            </RelationalTerm>
+        </RelationalTerm>
+    </RelationalTerm>
+    <cost value="3.0" type="DoubleCost"/>
+</RelationalTermWithCost>

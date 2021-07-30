@@ -1,0 +1,141 @@
+#+TITLE: PDQ
+
+* Schema files
+- relations can have =<attribute>= definitions
+- may also have primary keys and foreign keys
+- dependencies consists of =<body>= and =<head>= with constants and variables. atoms with =name= set to ="EQUALITY"= are equality comparisons in EDGs.
+- for =view= definitions the =relations= element only contains the result schema of the view. The view query is defined as inclusion dependencies =head -> body= and =body -> head=
+- relations have to have access method (this allows us to specify that certain relations can only be accessed by providing bindings for some of their attributes (use =<access-method name="NAME"/>= to define an access method that does not require inputs.
+
+  #+begin_src xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema>
+  <relations>
+    <relation name="R">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+      <access-method name="m1"/>
+    </relation>
+    <relation name="vR">
+      <attribute name="a" type="java.lang.Integer"/>
+      <attribute name="b" type="java.lang.Integer"/>
+      <attribute name="c" type="java.lang.Integer"/>
+    </relation>
+  </relations>
+  <dependencies>
+    <dependency>
+      <body>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="vR">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency>
+      <body>
+        <atom name="vR">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </body>
+      <head>
+        <atom name="R">
+          <variable name="a"  />
+          <variable name="b"  />
+          <variable name="c"  />
+        </atom>
+      </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="R">
+		  <variable />
+		  <variable name="x" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="S">
+          <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="R">
+		  <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="R">
+		  <variable name="x" />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+    <dependency>
+	  <body>
+	    <atom name="S">
+		  <variable name="x" />
+		  <variable name="y" />
+	    </atom>
+	    <atom name="S">
+		  <variable name="x" />
+		  <variable name="z" />
+	    </atom>
+	  </body>
+	  <head>
+	    <atom name="EQUALITY">
+		  <variable name="y" />
+		  <variable name="z" />
+	    </atom>
+	  </head>
+    </dependency>
+  </dependencies>
+</schema>
+  #+end_src
+* Query files
+#+begin_src xml
+<query>
+  <body>
+	<atom name="R">
+	  <variable name="x" />
+	  <variable name="y" />
+	</atom>
+	<atom name="R">
+	  <variable name="y" />
+	  <variable name="z" />
+	</atom>
+	<atom name="S">
+	  <variable name="z" />
+	  <variable name="a" />
+	</atom>
+  </body>
+  <head name="Q">
+	<variable name="x" />
+	<variable name="a" />
+  </head>
+</query>
+#+end_src
+* Planning (query rewriting with chase&backchase)
+- =-s= schema file
+- =-q= query file
+- =-o= output file
+  #+begin_src sh
+java -jar pdq-main-1.0.0-executable.jar planner -s SCHEMAFILE -q QUERYFILE -o PLAN
+  #+end_src

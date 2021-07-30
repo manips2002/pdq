@@ -1,0 +1,27 @@
+<query>
+  <body>
+	<atom name="R">
+	  <variable name="x" />
+	  <variable name="y" />
+	  <variable />
+	</atom>
+	<atom name="R">
+	  <variable name="y" />
+	  <variable name="z" />
+	  <variable />
+	</atom>
+	<atom name="S">
+	  <variable name="z" />
+	  <variable name="a" />
+	</atom>
+	<atom name="T">
+	  <variable name="a" />
+	  <variable name="b" />
+      <variable />
+	</atom>
+  </body>
+  <head name="Q">
+	<variable name="x" />
+	<variable name="a" />
+  </head>
+</query>
