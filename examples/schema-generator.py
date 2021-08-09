@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Optional
 import sqlparse as sp
 import argparse as ap
+from enum import Enum
 
 datatype_to_java = {
     'INT8' : 'java.lang.Integer',
@@ -16,6 +17,11 @@ datatype_to_java = {
     }
 
 access_method_counter = 1
+
+class IncludePKs(Enum):
+    NO = 0
+    AS_PK = 1
+    AS_EGD = 2
 
 @dataclass
 class Table:
@@ -29,20 +35,28 @@ class Table:
     def pkToFD(self):
         if self.pk:
             return FD(self, self.pk, self.attrNames())
+        return None
+
+    def pkToXML(self):
+        if self.pk:
+            return "\n" + "\n".join([ f"             <primaryKey>{a}</primaryKey>" for a in self.pk ])
+        else:
+            return ""
 
     def toXML(self,addPK=False):
         global access_method_counter
         access_method_counter += 1
         accm = f'm{access_method_counter}'
-        attrStr = listConcat([ "\t\t" + attrToXML(x[0], x[1]) for x in self.attrs])
-        return f"""\t<relation name="{self.name}">
-{attrStr}
-\t\t<access-method name="{accm}"/>
-\t</relation>
+        attrStr = listConcat([ "             " + attrToXML(x[0], x[1]) for x in self.attrs])
+        pkStr = self.pkToXML()
+        return f"""     <relation name="{self.name}">
+{attrStr}{pkStr}
+             <access-method name="{accm}"/>
+     </relation>
 """
 
     def viewXML(self):
-        attrStr = listConcat([ "\t\t" + attrToXML(x[0], x[1]) for x in self.attrs])
+        attrStr = listConcat([ "             " + attrToXML(x[0], x[1]) for x in self.attrs])
         return f"""<view name="{'v' + self.name}">
 {attrStr}
 \t</view>
@@ -106,10 +120,10 @@ class TGD:
 
     def toXML(self):
         return f"""<dependency type="TGD">
-	  <body>
+      <body>
 {listConcat([ a.toXML() for a in self.lhs])}
       </body>
-	  <head>
+      <head>
 {listConcat([ a.toXML() for a in self.rhs])}
       </head>
     </dependency>
@@ -123,14 +137,14 @@ class EDG:
     @staticmethod
     def equalityToXML(eq):
         return f"""
-        <atom name="EQUALITY">
-		  <variable name="{eq[0]}" />
-		  <variable name="{eq[1]}" />
-	    </atom>
+            <atom name="EQUALITY">
+                <variable name="{eq[0]}" />
+                <variable name="{eq[1]}" />
+            </atom>
 """
 
     def toXML(self):
-        return f"""<dependency>
+        return f"""    <dependency>
 	  <body>
 {listConcat([ a.toXML() for a in self.lhs])}
 	  </body>
@@ -190,10 +204,13 @@ def listConcat(strl, delim='\n'):
 def depToXML(d):
     return d.toXML()
 
-def schemaToXML(tables, deps):
-    strtable = [ t.toXML() for t in tables ]
+def schemaToXML(tables, deps, pk=IncludePKs.NO):
+    print(pk)
+    strtable = [ t.toXML(pk is IncludePKs.AS_PK) for t in tables ]
     strviews = [ t.viewXML() for t in tables ]
     strdeps = [ createTableViewDep(t) for t in tables ]
+    if pk is IncludePKs.AS_EGD:
+        strdeps += [ depToXML(t.pkToFD().toEDG()) for t in tables if t.pk ]
     strdeps += [ depToXML(d) for d in deps ]
 
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -231,10 +248,20 @@ def extractAttrs(ts):
 # TODO check for primary key
     return attrs
 
+def sqlkeyToKey(tok):
+    if isinstance(tok, sp.sql.Identifier):
+        return [ tok.value ]
+    else:
+        return [ t.value for t in tok.get_identifiers() ]
+
 def extractPK(ts):
     for el in ts:
-        if el[0].value.lower == 'primary' and el[1].value.lower == 'key':
-            return el
+        if el[0].value.lower() == 'primary' and el[1].value.lower() == 'key':
+            els = splitOnComma([ t for t in firstToken(el, sp.sql.Parenthesis) if not t.is_whitespace ][1:-1])
+            print(els)
+            return sqlkeyToKey(els[0][0])
+            return [ e[0].value for e in els ]
+    return None
 
 def sqlCreateTableParseToTable(st):
     nonwhite = [ t for t in st.tokens if not t.is_whitespace ]
@@ -244,7 +271,7 @@ def sqlCreateTableParseToTable(st):
     attrs = extractAttrs(els)
     pk = extractPK(els)
 
-    return Table(tableName, attrs, None)
+    return Table(tableName, attrs, pk)
 
 def sqlToSchema(f):
     tables = [ ]
@@ -253,19 +280,25 @@ def sqlToSchema(f):
     parse = sp.parse(content)
     for st in parse:
         if st.get_type() == 'CREATE':
-            tables.append(sqlCreateTableParseToTable(st))
+            table = sqlCreateTableParseToTable(st)
+            tables.append(table)
     return tables
 
-def writeXMLForSchema(sch, f, dep=[]):
+def writeXMLForSchema(sch, f, dep=[], pk=IncludePKs.NO):
     with open (f, 'w') as xmlschema:
-        xmlschema.write(schemaToXML(sch, dep))
+        xmlschema.write(schemaToXML(sch, dep, pk))
 
 def translateSQLtoXMLfile(conf):
+    pk=IncludePKs.NO
+    if conf.p:
+        pk=IncludePKs.AS_PK
+    elif conf.f:
+        pk=IncludePKs.AS_EGD
     schema = sqlToSchema(conf.infile)
     if conf.outfile:
-        writeXMLForSchema(schema, conf.outfile)
+        writeXMLForSchema(schema, conf.outfile, pk=pk)
     else:
-        print(schemaToXML(schema,''))
+        print(schemaToXML(schema,'', pk))
 
 def TPCH():
     sch = sqlToSchema("./tpch/tpch.sql")
@@ -279,10 +312,13 @@ def main():
     sqltoxml_parser = subparsers.add_parser('translate_sql')
     sqltoxml_parser.add_argument("-i", "--infile", type=str, help='input SQL file (no newlines because of limitation of sqlparse library', required=True)
     sqltoxml_parser.add_argument("-o", "--outfile", type=str, help='output XML file. If no file is provided write to stdout', required=False)
+    sqltoxml_parser.add_argument("-p", action='store_true', help='output primary key constraints in relation elements')
+    sqltoxml_parser.add_argument("-f", action='store_true', help='output PK constraints as EGDs')
     sqltoxml_parser.set_defaults(func=translateSQLtoXMLfile)
 
     # call function for subcommand
     conf = parser.parse_args()
+    print(conf)
     conf.func(conf)
 
 if __name__ == '__main__':
