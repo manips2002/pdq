@@ -1,57 +1,124 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 from functools import reduce
 import operator
 from dataclasses import dataclass
+from typing import Optional
+import sqlparse as sp
+import argparse as ap
 
 datatype_to_java = {
-     'NUMBER' : 'java.lang.Integer',
-     'VARCHAR' : 'java.lang.String'
-     }
+    'INT8' : 'java.lang.Integer',
+    'NUMBER' : 'java.lang.Integer',
+    'NUMERIC' : 'java.lang.Double',
+    'VARCHAR' : 'java.lang.String',
+    "DATE" : 'java.util.Date'
+    }
 
 access_method_counter = 1
 
 @dataclass
 class Table:
     name: str
-    attrs: list(tuple(str,str))
+    attrs: list[tuple[str]]
+    pk: Optional[list[str]]
+
+    def attrNames(self):
+        return [ x[0] for x in self.attrs ]
+
+    def pkToFD(self):
+        if self.pk:
+            return FD(self, self.pk, self.attrNames())
+
+    def toXML(self,addPK=False):
+        global access_method_counter
+        access_method_counter += 1
+        accm = f'm{access_method_counter}'
+        attrStr = listConcat([ "\t\t" + attrToXML(x[0], x[1]) for x in self.attrs])
+        return f"""\t<relation name="{self.name}">
+{attrStr}
+\t\t<access-method name="{accm}"/>
+\t</relation>
+"""
+
+    def viewXML(self):
+        attrStr = listConcat([ "\t\t" + attrToXML(x[0], x[1]) for x in self.attrs])
+        return f"""<view name="{'v' + self.name}">
+{attrStr}
+\t</view>
+"""
+
+
+@dataclass
+class Counter:
+    val: int = 0
+
+    def incr(self):
+        self.val += 1
+        return self.val - 1
 
 @dataclass
 class FD:
-    lhs: list(str)
-    rhs: list(str)
+    table: Table
+    lhs: list[str]
+    rhs: list[str]
+
+    @staticmethod
+    def genVar(a, lhsToVar, rhsToVar, c):
+        if a in lhsToVar:
+            return lhsToVar[a]
+        if a in rhsToVar:
+            return rhsToVar[a]
+        return varFromInt(c.incr())
+
+    def toEDG(self):
+        c = Counter()
+        lhsToVar = { a: varFromInt(c.incr()) for a in self.lhs }
+        onlyRhs = list(filter(lambda x: x not in self.lhs, self.rhs))
+        rhsToVarLeft = { a: varFromInt(c.incr()) for a in onlyRhs }
+        rhsToVarRight = { a: varFromInt(c.incr()) for a in onlyRhs }
+        print(lhsToVar, onlyRhs)
+
+        fa = atom(self.table.name, [ FD.genVar(a, lhsToVar, rhsToVarLeft, c) for a in self.table.attrNames()])
+        sa = atom(self.table.name, [ FD.genVar(a, lhsToVar, rhsToVarRight, c) for a in self.table.attrNames()])
+        eqs = [ (rhsToVarLeft[a], rhsToVarRight[a]) for a in onlyRhs ]
+
+        return EDG([fa,sa], eqs)
+
+    def toXML(self):
+        return self.toEDG().toXML()
 
 @dataclass
 class atom:
     name: str
-    args: list(str)
+    args: list[str]
 
-    def toXML(indent=3):
-        varStrs = listConcat([ '\t' + varToXML(arg) for arg in args])
-        return listConcat([ indent * 't' + s for s in  f"""<atom name="S">
+    def toXML(self, indent=3):
+        varStrs = listConcat([ '\t' + varToXML(arg) for arg in self.args])
+        return listConcat([ indent * '\t' + s for s in  f"""<atom name="{self.name}">
 {varStrs}
 </atom>""".split("\n")])
 
 @dataclass
 class TGD:
-    lhs: list(atom)
-    rhs: list(atom)
+    lhs: list[atom]
+    rhs: list[atom]
 
-    def toXML():
+    def toXML(self):
         return f"""<dependency type="TGD">
 	  <body>
-{listConcat([ a.toXML() for a in lhs])}
+{listConcat([ a.toXML() for a in self.lhs])}
       </body>
 	  <head>
-{listConcat([ a.toXML() for a in rhs])}
+{listConcat([ a.toXML() for a in self.rhs])}
       </head>
     </dependency>
 """
 
 @dataclass
 class EDG:
-    lhs: list(atom)
-    rhs: list(tuple(str,str))
+    lhs: list[atom]
+    rhs: list[tuple[str,str]]
 
     @staticmethod
     def equalityToXML(eq):
@@ -62,13 +129,13 @@ class EDG:
 	    </atom>
 """
 
-    def toXML():
+    def toXML(self):
         return f"""<dependency>
 	  <body>
-{listConcat([ a.toXML() for a in lhs])}
+{listConcat([ a.toXML() for a in self.lhs])}
 	  </body>
 	  <head>
-{listConcat([ EDG.equalityToXML(e) for e in rhs])}
+{listConcat([ EDG.equalityToXML(e) for e in self.rhs])}
 	  </head>
     </dependency>
 """
@@ -80,29 +147,14 @@ def dtToJava(dt):
 def attrToXML(name, dt):
     return f'<attribute name="{name}" type="{dtToJava(dt)}"/>'
 
-def tableToXML(table):
-    global access_method_counter
-    access_method_counter += 1
-    accm = f'm{access_method_counter}'
-    attrStr = listConcat([ "\t\t" + attrToXML(x) for x in table.attrs])
-    return f"""<relation name="{table.name}">
-{attrStr}
-\t\t<access-method name="{accm}"/>
-\t</relation>
-"""
-
-def tableViewToXML(table):
-    attrStr = listConcat([ "\t\t" + attrToXML(x) for x in table.attrs])
-    return f"""<view name="{'v' + table.name}">
-{attrStr}
-\t</view>
-"""
+def varFromInt(i, basename='x'):
+    return f"x{i}"
 
 def varToXML(name):
     return f'<variable name="{name}" />'
 
 def createVarList(attrs, tabs):
-    return reduce(operator.add, [ (tabs * '\t') + varToXML(i) for i in range(1,len(attrs)) ], "")
+    return listConcat([ (tabs * '\t') + varToXML(varFromInt(i)) for i in range(0,len(attrs)) ])
 
 def createTableViewDep(table):
     return f"""
@@ -133,14 +185,14 @@ def createTableViewDep(table):
 """
 
 def listConcat(strl, delim='\n'):
-    return reduce(lambda x,y: x + y, strl, '')
+    return delim.join(strl)
 
 def depToXML(d):
     return d.toXML()
 
 def schemaToXML(tables, deps):
-    strtable = [ tableToXML(t) for t in tables ]
-    strviews = [ tableViewToXML(t) for t in tables ]
+    strtable = [ t.toXML() for t in tables ]
+    strviews = [ t.viewXML() for t in tables ]
     strdeps = [ createTableViewDep(t) for t in tables ]
     strdeps += [ depToXML(d) for d in deps ]
 
@@ -156,10 +208,82 @@ def schemaToXML(tables, deps):
 </schema>
 """
 
+def firstToken(lst, cls):
+    return next(iter([ t for t in lst if  isinstance(t, cls)]))
+
+def splitOnComma(ts):
+    elements = []
+    cur = []
+    for t in ts:
+        if t.ttype == sp.tokens.Punctuation and t.value == ',':
+            elements.append(cur)
+            cur = []
+        else:
+            cur.append(t)
+    elements.append(cur)
+    return elements
+
+def extractAttrs(ts):
+    attrs = []
+    for el in ts:
+        if isinstance(el[0], sp.sql.Identifier):
+            attrs.append((el[0].value, el[1].value))
+# TODO check for primary key
+    return attrs
+
+def extractPK(ts):
+    for el in ts:
+        if el[0].value.lower == 'primary' and el[1].value.lower == 'key':
+            return el
+
+def sqlCreateTableParseToTable(st):
+    nonwhite = [ t for t in st.tokens if not t.is_whitespace ]
+    tableName = firstToken(nonwhite, sp.sql.Identifier).value
+    els = [ t for t in firstToken(nonwhite, sp.sql.Parenthesis) if not t.is_whitespace ][1:-1]
+    els = splitOnComma(els)
+    attrs = extractAttrs(els)
+    pk = extractPK(els)
+
+    return Table(tableName, attrs, None)
+
+def sqlToSchema(f):
+    tables = [ ]
+    with open (f, "r") as sqlfile:
+        content = "\n".join(sqlfile.readlines())
+    parse = sp.parse(content)
+    for st in parse:
+        if st.get_type() == 'CREATE':
+            tables.append(sqlCreateTableParseToTable(st))
+    return tables
+
+def writeXMLForSchema(sch, f, dep=[]):
+    with open (f, 'w') as xmlschema:
+        xmlschema.write(schemaToXML(sch, dep))
+
+def translateSQLtoXMLfile(conf):
+    schema = sqlToSchema(conf.infile)
+    if conf.outfile:
+        writeXMLForSchema(schema, conf.outfile)
+    else:
+        print(schemaToXML(schema,''))
+
+def TPCH():
+    sch = sqlToSchema("./tpch/tpch.sql")
+    writeXMLForSchema("./tpch/full_tpch_schema.xm")
+
 def main():
-    deps = []
-    tables = []
-    views = []
+    parser = ap.ArgumentParser(description='Create PDQs XML schemas.')
+    subparsers = parser.add_subparsers()
+
+    # translate SQL to XML
+    sqltoxml_parser = subparsers.add_parser('translate_sql')
+    sqltoxml_parser.add_argument("-i", "--infile", type=str, help='input SQL file (no newlines because of limitation of sqlparse library', required=True)
+    sqltoxml_parser.add_argument("-o", "--outfile", type=str, help='output XML file. If no file is provided write to stdout', required=False)
+    sqltoxml_parser.set_defaults(func=translateSQLtoXMLfile)
+
+    # call function for subcommand
+    conf = parser.parse_args()
+    conf.func(conf)
 
 if __name__ == '__main__':
     main()
