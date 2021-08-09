@@ -138,7 +138,7 @@ def listConcat(strl, delim='\n'):
 def depToXML(d):
     return d.toXML()
 
-def schemaToXML(tables, views, deps):
+def schemaToXML(tables, deps):
     strtable = [ tableToXML(t) for t in tables ]
     strviews = [ tableViewToXML(t) for t in tables ]
     strdeps = [ createTableViewDep(t) for t in tables ]
@@ -147,11 +147,11 @@ def schemaToXML(tables, views, deps):
     return f"""<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema>
   <relations>
-    {listConcat(tables)}
-    {listConcat(views)}
+    {listConcat(strtable)}
+    {listConcat(strviews)}
   </relations>
   <dependencies>
-    {listConcat(deps)}
+    {listConcat(strdeps)}
   </dependencies>
 </schema>
 """
