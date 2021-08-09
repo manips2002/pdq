@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Optional
 import sqlparse as sp
 import argparse as ap
+import re
 from enum import Enum
 
 datatype_to_java = {
@@ -15,6 +16,11 @@ datatype_to_java = {
     'VARCHAR' : 'java.lang.String',
     "DATE" : 'java.util.Date'
     }
+
+sql_dt_replacements = {
+    r'DOUBLE': 'NUMERIC',
+    r'VARCHAR([(][0-9]+[)])?': 'VARCHAR'
+}
 
 access_method_counter = 1
 
@@ -91,7 +97,6 @@ class FD:
         onlyRhs = list(filter(lambda x: x not in self.lhs, self.rhs))
         rhsToVarLeft = { a: varFromInt(c.incr()) for a in onlyRhs }
         rhsToVarRight = { a: varFromInt(c.incr()) for a in onlyRhs }
-        print(lhsToVar, onlyRhs)
 
         fa = atom(self.table.name, [ FD.genVar(a, lhsToVar, rhsToVarLeft, c) for a in self.table.attrNames()])
         sa = atom(self.table.name, [ FD.genVar(a, lhsToVar, rhsToVarRight, c) for a in self.table.attrNames()])
@@ -154,6 +159,11 @@ class EDG:
     </dependency>
 """
 
+def replace_non_sqlparse_dts(s):
+    for (rex, repl) in sql_dt_replacements.items():
+        s = re.sub(rex, repl, s)
+    return s
+
 def dtToJava(dt):
     global datatype_to_java
     return datatype_to_java[dt]
@@ -205,7 +215,6 @@ def depToXML(d):
     return d.toXML()
 
 def schemaToXML(tables, deps, pk=IncludePKs.NO):
-    print(pk)
     strtable = [ t.toXML(pk is IncludePKs.AS_PK) for t in tables ]
     strviews = [ t.viewXML() for t in tables ]
     strdeps = [ createTableViewDep(t) for t in tables ]
@@ -258,9 +267,7 @@ def extractPK(ts):
     for el in ts:
         if el[0].value.lower() == 'primary' and el[1].value.lower() == 'key':
             els = splitOnComma([ t for t in firstToken(el, sp.sql.Parenthesis) if not t.is_whitespace ][1:-1])
-            print(els)
             return sqlkeyToKey(els[0][0])
-            return [ e[0].value for e in els ]
     return None
 
 def sqlCreateTableParseToTable(st):
@@ -273,10 +280,12 @@ def sqlCreateTableParseToTable(st):
 
     return Table(tableName, attrs, pk)
 
-def sqlToSchema(f):
+def sqlToSchema(f, replaceDTs=True):
     tables = [ ]
     with open (f, "r") as sqlfile:
-        content = "\n".join(sqlfile.readlines())
+        content = " ".join(sqlfile.readlines()).replace("\t", " ").replace("\n", " ")
+    if replaceDTs:
+        content = replace_non_sqlparse_dts(content)
     parse = sp.parse(content)
     for st in parse:
         if st.get_type() == 'CREATE':
@@ -294,15 +303,11 @@ def translateSQLtoXMLfile(conf):
         pk=IncludePKs.AS_PK
     elif conf.f:
         pk=IncludePKs.AS_EGD
-    schema = sqlToSchema(conf.infile)
+    schema = sqlToSchema(conf.infile, conf.replace_dt)
     if conf.outfile:
         writeXMLForSchema(schema, conf.outfile, pk=pk)
     else:
         print(schemaToXML(schema,'', pk))
-
-def TPCH():
-    sch = sqlToSchema("./tpch/tpch.sql")
-    writeXMLForSchema("./tpch/full_tpch_schema.xm")
 
 def main():
     parser = ap.ArgumentParser(description='Create PDQs XML schemas.')
@@ -314,11 +319,11 @@ def main():
     sqltoxml_parser.add_argument("-o", "--outfile", type=str, help='output XML file. If no file is provided write to stdout', required=False)
     sqltoxml_parser.add_argument("-p", action='store_true', help='output primary key constraints in relation elements')
     sqltoxml_parser.add_argument("-f", action='store_true', help='output PK constraints as EGDs')
+    sqltoxml_parser.add_argument("--replace_dt", action='store_true', help='replace DTs not support by python sqlparse')
     sqltoxml_parser.set_defaults(func=translateSQLtoXMLfile)
 
     # call function for subcommand
     conf = parser.parse_args()
-    print(conf)
     conf.func(conf)
 
 if __name__ == '__main__':
