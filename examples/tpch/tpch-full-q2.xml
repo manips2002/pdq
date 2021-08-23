@@ -1,0 +1,85 @@
+<!--
+    Q(p*) :- resprime_q2()
+             nation(), region(), supplier(), partsupp(), part(), tmp2()
+
+Q(X) :- R1(X1), ..., Rn(Xn)
+
+Q(X, Xi) :- R1(X1), ..., Rn(Xn)
+
+-->
+<query>
+  <body>
+    <atom name="resprime_q2">
+      <variable name="s_acctbal" />
+      <variable name="s_name" />
+      <variable name="n_name" />
+      <variable name="p_partkey" />
+      <variable name="p_mfgr" />
+      <variable name="s_address" />
+      <variable name="s_phone" />
+      <variable name="s_comment" />
+    </atom>
+    <!-- first copy of accessed tables -->
+	<atom name="vnation">
+		<variable name="n_nationkey"/>
+		<variable name="n_name"/>
+		<variable name="n_regionkey"/>
+		<variable name="n_comment"/>
+	</atom>
+
+	<atom name="vregion">
+		<variable name="n_regionkey"/>
+		<constant value="EUROPE"/>
+		<variable name="r_comment"/>
+	</atom>
+
+    <atom name="vsupplier">
+		<variable name="s_suppkey"/>
+		<variable name="s_name"/>
+		<variable name="s_address"/>
+		<variable name="n_nationkey"/>
+		<variable name="s_phone"/>
+		<variable name="s_acctbal"/>
+		<variable name="s_comment"/>
+	</atom>
+
+    <atom name="vpartsupp">
+		<variable name="p_partkey"/>
+		<variable name="s_suppkey"/>
+		<variable name="ps_availqty"/>
+		<variable name="ps_supplycost"/>
+		<variable name="ps_comment"/>
+	</atom>
+
+    <atom name="vpart">
+		<variable name="p_partkey"/>
+		<variable name="p_name"/>
+		<variable name="p_mfgr"/>
+		<variable name="p_brand"/>
+		<constant value="BRASS"/>
+        <!-- type '%BRASS' simulate like -->
+		<constant value="15"/>
+		<variable name="p_container"/>
+		<variable name="p_retailprice"/>
+		<variable name="p_comment"/>
+	</atom>
+
+    <atom name="vq2_minimum_cost_supplier_tmp2">
+      <variable name="p_partkey" />
+      <variable name="ps_supplycost" />
+    </atom>
+
+
+  </body>
+  <head name="Q">
+		<variable name="p_partkey" />
+		<variable name="p_name" />
+		<variable name="p_mfgr" />
+		<variable name="p_brand" />
+		<variable name="p_type" />
+		<variable name="p_size" />
+		<variable name="p_container" />
+		<variable name="p_retailprice" />
+		<variable name="p_comment" />
+  </head>
+</query>

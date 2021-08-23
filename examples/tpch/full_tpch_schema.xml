@@ -94,6 +94,24 @@
 		<access-method name="m9"/>
 	</relation>
 
+    <relation name="q2_minimum_cost_supplier_tmp2">
+      <attribute name="p_partkey" type="java.lang.Integer"/>
+      <attribute name="ps_min_supplycost" type="java.lang.Integer"/>
+      <access-method name="m10" />
+    </relation>
+
+    <relation name="resprime_q2">
+      <attribute name="s_acctbal" type="java.lang.Double"/>
+      <attribute name="s_name" type="java.lang.String"/>
+      <attribute name="n_name" type="java.lang.String"/>
+      <attribute name="p_partkey" type="java.lang.Integer"/>
+      <attribute name="p_mfgr" type="java.lang.String"/>
+      <attribute name="s_address" type="java.lang.String"/>
+      <attribute name="s_phone" type="java.lang.String"/>
+      <attribute name="s_comment" type="java.lang.String" />
+      <access-method name="m11" />
+    </relation>
+
     <view name="vpart">
 		<attribute name="p_partkey" type="java.lang.Integer"/>
 		<attribute name="p_name" type="java.lang.String"/>
@@ -179,9 +197,26 @@
 		<attribute name="r_comment" type="java.lang.String"/>
 	</view>
 
+    <view name="vq2_minimum_cost_supplier_tmp2">
+      <attribute name="p_partkey" type="java.lang.Integer"/>
+      <attribute name="ps_min_supplycost" type="java.lang.Integer"/>
+    </view>
+
+    <relation name="vresprime_q2">
+      <attribute name="s_acctbal" type="java.lang.Double"/>
+      <attribute name="s_name" type="java.lang.String"/>
+      <attribute name="n_name" type="java.lang.String"/>
+      <attribute name="p_partkey" type="java.lang.Integer"/>
+      <attribute name="p_mfgr" type="java.lang.String"/>
+      <attribute name="s_address" type="java.lang.String"/>
+      <attribute name="s_phone" type="java.lang.String"/>
+      <attribute name="s_comment" type="java.lang.String" />
+    </relation>
+
+
   </relations>
   <dependencies>
-    
+
     <dependency type="TGD">
       <body>
         <atom name="part">
@@ -600,6 +635,94 @@
         </atom>
       </head>
     </dependency>
+
+    <dependency type="TGD">
+      <body>
+        <atom name="q2_minimum_cost_supplier_tmp2">
+			<variable name="x0" />
+			<variable name="x1" />
+        </atom>
+      </body>
+      <head>
+        <atom name="vq2_minimum_cost_supplier_tmp2">
+			<variable name="x0" />
+			<variable name="x1" />
+        </atom>
+      </head>
+    </dependency>
+    <dependency type="TGD">
+      <body>
+        <atom name="vq2_minimum_cost_supplier_tmp2">
+			<variable name="x0" />
+			<variable name="x1" />
+        </atom>
+      </body>
+      <head>
+        <atom name="q2_minimum_cost_supplier_tmp2">
+			<variable name="x0" />
+			<variable name="x1" />
+        </atom>
+      </head>
+    </dependency>
+
+    <dependency type="TGD">
+      <body>
+        <atom name="vresprime_q2">
+			<variable name="x0" />
+			<variable name="x1" />
+			<variable name="x2" />
+			<variable name="x3" />
+			<variable name="x4" />
+			<variable name="x5" />
+			<variable name="x6" />
+			<variable name="x7" />
+			<variable name="x8" />
+        </atom>
+      </body>
+      <head>
+        <atom name="resprime_q2">
+			<variable name="x0" />
+			<variable name="x1" />
+			<variable name="x2" />
+			<variable name="x3" />
+			<variable name="x4" />
+			<variable name="x5" />
+			<variable name="x6" />
+			<variable name="x7" />
+			<variable name="x8" />
+        </atom>
+      </head>
+    </dependency>
+
+    <dependency type="TGD">
+      <body>
+        <atom name="resprime_q2">
+			<variable name="x0" />
+			<variable name="x1" />
+			<variable name="x2" />
+			<variable name="x3" />
+			<variable name="x4" />
+			<variable name="x5" />
+			<variable name="x6" />
+			<variable name="x7" />
+			<variable name="x8" />
+        </atom>
+      </body>
+      <head>
+        <atom name="vresprime_q2">
+			<variable name="x0" />
+			<variable name="x1" />
+			<variable name="x2" />
+			<variable name="x3" />
+			<variable name="x4" />
+			<variable name="x5" />
+			<variable name="x6" />
+			<variable name="x7" />
+			<variable name="x8" />
+        </atom>
+      </head>
+    </dependency>
+
 
   </dependencies>
 </schema>
