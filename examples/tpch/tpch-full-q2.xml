@@ -29,7 +29,7 @@ Q(X, Xi) :- R1(X1), ..., Rn(Xn)
 
 	<atom name="vregion">
 		<variable name="n_regionkey"/>
-		<constant value="EUROPE"/>
+		<constant value="EUROPE" type="java.lang.String"/>
 		<variable name="r_comment"/>
 	</atom>
 
@@ -56,9 +56,9 @@ Q(X, Xi) :- R1(X1), ..., Rn(Xn)
 		<variable name="p_name"/>
 		<variable name="p_mfgr"/>
 		<variable name="p_brand"/>
-		<constant value="BRASS"/>
+		<constant value="BRASS" type="java.lang.String"/>
         <!-- type '%BRASS' simulate like -->
-		<constant value="15"/>
+		<constant value="15" type="java.lang.Integer"/>
 		<variable name="p_container"/>
 		<variable name="p_retailprice"/>
 		<variable name="p_comment"/>
