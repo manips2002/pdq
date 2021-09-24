@@ -3,7 +3,7 @@
 from functools import reduce
 import operator
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List, Tuple
 import sqlparse as sp
 import argparse as ap
 import re
@@ -32,8 +32,8 @@ class IncludePKs(Enum):
 @dataclass
 class Table:
     name: str
-    attrs: list[tuple[str]]
-    pk: Optional[list[str]]
+    attrs: List[Tuple[str]]
+    pk: Optional[List[str]]
 
     def attrNames(self):
         return [ x[0] for x in self.attrs ]
@@ -54,7 +54,9 @@ class Table:
         access_method_counter += 1
         accm = f'm{access_method_counter}'
         attrStr = listConcat([ "             " + attrToXML(x[0], x[1]) for x in self.attrs])
-        pkStr = self.pkToXML()
+        pkStr = ""
+        if (addPK):
+            pkStr = self.pkToXML()
         return f"""     <relation name="{self.name}">
 {attrStr}{pkStr}
              <access-method name="{accm}"/>
@@ -80,8 +82,8 @@ class Counter:
 @dataclass
 class FD:
     table: Table
-    lhs: list[str]
-    rhs: list[str]
+    lhs: List[str]
+    rhs: List[str]
 
     @staticmethod
     def genVar(a, lhsToVar, rhsToVar, c):
@@ -110,7 +112,7 @@ class FD:
 @dataclass
 class atom:
     name: str
-    args: list[str]
+    args: List[str]
 
     def toXML(self, indent=3):
         varStrs = listConcat([ '\t' + varToXML(arg) for arg in self.args])
@@ -120,8 +122,8 @@ class atom:
 
 @dataclass
 class TGD:
-    lhs: list[atom]
-    rhs: list[atom]
+    lhs: List[atom]
+    rhs: List[atom]
 
     def toXML(self):
         return f"""<dependency type="TGD">
@@ -136,8 +138,8 @@ class TGD:
 
 @dataclass
 class EDG:
-    lhs: list[atom]
-    rhs: list[tuple[str,str]]
+    lhs: List[atom]
+    rhs: List[Tuple[str,str]]
 
     @staticmethod
     def equalityToXML(eq):
